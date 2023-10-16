@@ -67,5 +67,6 @@ def main():
     values_full.to_sql(con=engine, name="metropolitan_area", if_exists="replace", schema=config.DB_SCHEMA)
     engine.dispose()
 
+
 if __name__ == "__main__":
     main()
