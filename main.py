@@ -1,4 +1,7 @@
-"""This script connects with Eurostat API and extracts data from dataset 'Area of the regions by metropolitan regions'.
+"""This script connects with Eurostat API and extracts data from datasets:
+'Area of the regions by metropolitan regions',
+'Population on 1 January by five year age group, sex and metropolitan regions'.
+
 The script then saves the data in the database of your selection.
 
 The script requires a config file that is imported and that contains information about MSSQL server, database name,
@@ -18,6 +21,7 @@ import pyodbc
 import sqlalchemy as sql
 import config
 import metropolitan_region_area as mra
+import metropolitan_region_population as mrp
 
 
 def open_database_connection() -> sql.engine:
@@ -65,6 +69,10 @@ def main():
     regions_full.drop_duplicates(inplace=True)
     regions_full.to_sql(con=engine, name="metropolitan_regions", if_exists="replace", schema=config.DB_SCHEMA)
     values_full.to_sql(con=engine, name="metropolitan_area", if_exists="replace", schema=config.DB_SCHEMA)
+
+    """Collecting data about population"""
+    mrp_df = mrp.generate_dataframe()
+    mrp_df.to_sql(con=engine, name="population", if_exists="replace", schema=config.DB_SCHEMA)
     engine.dispose()
 
 
