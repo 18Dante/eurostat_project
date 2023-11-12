@@ -56,7 +56,9 @@ def extract_values(response: dict, regions: pd.DataFrame, year: int, sex: str, a
 #
 # vals = extract_values(resp, regs, 2021)
 # print(vals)
-def generate_dataframe():
+
+
+def generate_dataframe() -> dict:
     regions_list = []
     values_list = []
     regions_full = pd.DataFrame
@@ -74,4 +76,7 @@ def generate_dataframe():
                 values_list.append(vals)
 
     values_full = pd.concat(values_list)
-    return values_full
+    regions_full = pd.concat(regions_list)
+    output_dict = {"population_values": values_full,
+                   "regions_values": regions_full}
+    return output_dict

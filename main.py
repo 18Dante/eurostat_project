@@ -66,13 +66,20 @@ def main():
         regions_full = pd.concat(region_dfs_to_concat)
         values_full = pd.concat(values_dfs_to_concat)
 
-    regions_full.drop_duplicates(inplace=True)
-    regions_full.to_sql(con=engine, name="metropolitan_regions", if_exists="replace", schema=config.DB_SCHEMA)
     values_full.to_sql(con=engine, name="metropolitan_area", if_exists="replace", schema=config.DB_SCHEMA)
 
     """Collecting data about population"""
-    mrp_df = mrp.generate_dataframe()
-    mrp_df.to_sql(con=engine, name="population", if_exists="replace", schema=config.DB_SCHEMA)
+    mrp_output = mrp.generate_dataframe()
+    mrp_pop_df = mrp_output["population_values"]
+    mrp_pop_df.to_sql(con=engine, name="population", if_exists="replace", schema=config.DB_SCHEMA)
+
+    """Collecting data about regions from area and population data"""
+    mrp_reg_df = mrp_output["regions_values"]
+    regions_full = pd.concat([mrp_reg_df, regions_full])
+    regions_full.drop_duplicates(inplace=True)
+    regions_full.to_sql(con=engine, name="metropolitan_regions", if_exists="replace", schema=config.DB_SCHEMA)
+
+
     engine.dispose()
 
 
